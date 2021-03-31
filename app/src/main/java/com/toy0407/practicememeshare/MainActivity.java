@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -22,6 +23,7 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -53,7 +55,19 @@ public class MainActivity extends AppCompatActivity {
     private OutputStream outputStream;
     private Drawable meme;
 
-    /* Next Functions*/
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        memeImageView = findViewById(R.id.memeImageView);
+        bar = findViewById(R.id.memeProgressBar);
+        requestMeme();
+
+
+    }
+
+    /* Next functions*/
     public void nextMeme(View view) {
         memeImageView.animate().alpha(0).start();
         requestMeme();
@@ -98,15 +112,7 @@ public class MainActivity extends AppCompatActivity {
         meme=imageDrawable;
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        memeImageView = findViewById(R.id.memeImageView);
-        bar = findViewById(R.id.memeProgressBar);
-        requestMeme();
-    }
     /*Share functions*/
     public void shareMeme(View view) {
         BitmapDrawable bitmapDrawable = (BitmapDrawable) meme;
@@ -125,7 +131,8 @@ public class MainActivity extends AppCompatActivity {
         return Uri.parse(path);
     }
 
-    /*Save Functions*/
+
+    /*Save functions*/
     public void saveMeme(View view) throws IOException {
         if (Build.VERSION.SDK_INT<=29) {
             if (getApplicationContext().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
@@ -155,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
         outputStream.close();
     }
 
+
     //Request Permission for storage
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -175,28 +183,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        int action = MotionEventCompat.getActionMasked(event);
+    /*Image Scaling*/
 
-        switch(action) {
-            case (MotionEvent.ACTION_DOWN) :
-                Log.d("Motion","Action was DOWN");
-                return true;
-            case (MotionEvent.ACTION_MOVE) :
-                Log.d("Motion","Action was MOVE");
-                return true;
-            case (MotionEvent.ACTION_UP) :
-                Log.d("Motion","Action was UP");
-                return true;
-            case (MotionEvent.ACTION_CANCEL) :
-                Log.d("Motion","Action was CANCEL");
-                return true;
-            case (MotionEvent.ACTION_OUTSIDE) :
-                Log.d("Motion","Movement occurred outside bounds " +
-                        "of current screen element");
-                return true;
-            default :
-                return super.onTouchEvent(event);
-        }    }
 }
